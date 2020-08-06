@@ -78,7 +78,7 @@ Stack(
         children: <Widget>[
          GestureDetector(child:  cards('Home', FontAwesomeIcons.home),
          onTap: (){
-            Navigator.push(
+          Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => WebScreen(
           title: 'Home',
