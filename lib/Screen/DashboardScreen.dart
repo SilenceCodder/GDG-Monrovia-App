@@ -85,10 +85,34 @@ Stack(
           url: 'https://gdg.community.dev/events/details/google-gdg-monrovia-presents-flutter-boot-camp-for-newbies/',
         )));
          },),
-         
-           cards('Facebook', FontAwesomeIcons.facebook),
-            cards('Twitter', FontAwesomeIcons.twitter),
-             cards('LinkedIn', FontAwesomeIcons.linkedin),
+
+         GestureDetector(child: cards('Facebook', FontAwesomeIcons.facebook),
+         onTap: (){
+            Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => WebScreen(
+          title: 'Facebook',
+          url: 'https://gdg.community.dev/events/details/google-gdg-monrovia-presents-flutter-boot-camp-for-newbies/',
+        )));
+                
+         }),
+
+         GestureDetector(child: cards('Twitter', FontAwesomeIcons.twitter),
+         onTap: (){
+            Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => WebScreen(
+          title: 'Twitter',
+          url: 'https://gdg.community.dev/events/details/google-gdg-monrovia-presents-flutter-boot-camp-for-newbies/',
+        )));
+
+         }),
+
+         GestureDetector(child: cards('LinkedIn', FontAwesomeIcons.linkedin),
+        onTap: (){
+
+         }),
+                 
       ],),
     ),
       ],));
