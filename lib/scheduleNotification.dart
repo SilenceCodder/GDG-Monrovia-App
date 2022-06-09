@@ -29,4 +29,42 @@ Class schedule{
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime);
   }
+ 
+ //Try 2
+ 
+  _zonedScheduler(
+      {required int id,
+      required String? title,
+      required String? message,
+      required NotificationDetails platformChannelSpecifics,
+      String? payload = ''}) async {
+  DateTime formattedDate = intl.DateFormat('E hh:mm')
+              .parse('Mon 11:56');
+    await _flutterLocalNotificationsPlugin!.zonedSchedule(
+        id,
+        title,
+        message,
+        _convertTime(
+            formattedDate.hour, formattedDate.minute, formattedDate.weekday),
+        platformChannelSpecifics,
+        androidAllowWhileIdle: true,
+        payload: payload,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime);
+  }
+
+  tz.TZDateTime _convertTime(int hour, int minutes, int day) {
+    final tz.TZDateTime now = tz.TZDateTime.now(
+        tz.getLocation(AppDateTime().localTimeZone ?? 'America/Chicago'));
+    tz.TZDateTime scheduleDate = tz.TZDateTime(
+      tz.getLocation(AppDateTime().localTimeZone ?? 'America/Chicago'),
+      now.year,
+      now.month,
+      day,
+      hour,
+      minutes,
+    );
+    return scheduleDate;
+  }
 }
