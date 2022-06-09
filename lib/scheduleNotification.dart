@@ -1,70 +1,73 @@
-import 'package:timezone/data/latest_all.dart' as tz;
-import 'package:timezone/timezone.dart' as te;
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:intl/intl.dart' as intl;
 
+class NotificationService {
+  static final NotificationService _notificationService =
+      NotificationService._internal();
 
-Class schedule{
- 
-  scheduleNotifier(){
-    DateTime dd = intl.DateFormat('h:mm a')
-        .parse('9:39 PM'); 
-   // final now = DateTime.now();
-    await _flutterLocalNotificationsPlugin!.zonedSchedule(
-        id,
-        title,
-        message,
-        // tz.TZDateTime.from(
-        //     now,
-        //     tz.getLocation(
-        //         AppDateTime().localTimeZone ?? 'America/Chicago')), //
-        tz.TZDateTime.from(dd, tz.getLocation('America/Chicago'))
-            .add(const Duration(seconds: 5)),
-        // tz.TZDateTime.now(
-        //     tz.getLocation('America/Chicago')), //AppDateTime().localTimeZone ??
-        platformChannelSpecifics,
-        androidAllowWhileIdle: true,
-        payload: payload,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime);
-  }
- 
- //Try 2
- 
-  _zonedScheduler(
-      {required int id,
-      required String? title,
-      required String? message,
-      required NotificationDetails platformChannelSpecifics,
-      String? payload = ''}) async {
-  DateTime formattedDate = intl.DateFormat('E hh:mm')
-              .parse('Mon 11:56');
-    await _flutterLocalNotificationsPlugin!.zonedSchedule(
-        id,
-        title,
-        message,
-        _convertTime(
-            formattedDate.hour, formattedDate.minute, formattedDate.weekday),
-        platformChannelSpecifics,
-        androidAllowWhileIdle: true,
-        payload: payload,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime);
+  factory NotificationService() {
+    return _notificationService;
   }
 
-  tz.TZDateTime _convertTime(int hour, int minutes, int day) {
-    final tz.TZDateTime now = tz.TZDateTime.now(
-        tz.getLocation(AppDateTime().localTimeZone ?? 'America/Chicago'));
-    tz.TZDateTime scheduleDate = tz.TZDateTime(
-      tz.getLocation(AppDateTime().localTimeZone ?? 'America/Chicago'),
-      now.year,
-      now.month,
-      day,
-      hour,
-      minutes,
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  NotificationService._internal();
+
+  Future<void> initNotification() async {
+    // Android initialization
+    final AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    // ios initialization
+    final IOSInitializationSettings initializationSettingsIOS =
+        IOSInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
     );
-    return scheduleDate;
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+            android: initializationSettingsAndroid,
+            iOS: initializationSettingsIOS);
+    // the initialization settings are initialized after they are setted
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<void> showNotification(int id, String title, String body) async {
+    //DateTime dd = intl.DateFormat('h:mm a').parse(DateTime.now().toString());
+    DateTime dd = DateTime.now();
+    final scheduledDate = tz.TZDateTime.from(dd, tz.getLocation('Asia/Kolkata'))
+        .add(Duration(seconds: 5));
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      id,
+      title,
+      body,
+      scheduledDate,
+      const NotificationDetails(
+        // Android details
+        android: AndroidNotificationDetails('main_channel', 'Main Channel',
+            channelDescription: "Abhishek",
+            importance: Importance.max,
+            priority: Priority.max),
+        // iOS details
+        iOS: IOSNotificationDetails(
+          sound: 'default.wav',
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+
+      // Type of time interpretation
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle:
+          true, // To show notification even when the app is closed
+    );
   }
 }
